@@ -1,5 +1,5 @@
-import syll
+from custom.syll import syllables
 
 while True :
     var = raw_input("Enter a word: ")
-    print var + ": " + str(syll.numSyllables(var))
+    print var + ": " + str(syllables(var))

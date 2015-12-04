@@ -1,6 +1,6 @@
 import re
 
-def numSyllables(word) :
+def syllables(word) :
  
     word = word.lower()
  
