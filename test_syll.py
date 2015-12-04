@@ -1,4 +1,4 @@
-from custom.syll import syllables
+from custom.functions import *
 
 while True :
     var = raw_input("Enter a word: ")
