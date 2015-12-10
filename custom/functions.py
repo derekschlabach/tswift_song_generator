@@ -1,6 +1,25 @@
 import re
 import nltk
+import random
 
+def get_word_for_pos(wordList, hist, langmod):
+    word_probs = {}
+    sumProbs = 0.0
+    for word in wordList:
+        word_probs[word] = langmod.p(word, hist)
+        sumProbs += word_probs[word]
+    
+    #choose random number from 0.00000001 to sumProbs (inclusive)
+    rand = random.random() * sumProbs
+    counter = 0.0
+    for word in word_probs:
+        counter += word_probs[word]
+        if counter >= rand:
+            #this is the word that we have chosen based on the weighted probabilities
+            return word
+        
+    #if we do not return anything we should throw an exception
+        
 def rhyme(inp, candidates, level):
     entries = nltk.corpus.cmudict.entries()
     syllables = [(word, syl) for word, syl in entries if word == inp]

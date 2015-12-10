@@ -20,34 +20,6 @@ langmod = TrigramLanguageModel(lm_data)
 
 #Taken from Proj 4
 reduced_tgs = {}
-"""
-# noun-like
-for x in ['NN', 'NNS', 'NNP', 'NNPS', 'PRP', 'EX', 'WP'] :
-    reduced_tgs[x] = 'N'
-# verb-like
-for x in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ', 'MD', 'TO'] :
-    reduced_tgs[x] = 'V'
-# adjective-like
-for x in ['POS', 'PRP$', 'WP$', 'JJ', 'JJR', 'JJS', 'DT', 'CD', 'PDT', 'WDT', 'LS']:
-    reduced_tgs[x] = 'AJ'
-# adverb-like
-for x in ['RB', 'RBR', 'RBS', 'WRB', 'RP', 'IN', 'CC']:
-    reduced_tgs[x] = 'AV'
-# interjections
-for x in ['FW', 'UH'] :
-    reduced_tgs[x] = 'I'
-# symbols
-for x in ['SYM', '$', '#'] :
-    reduced_tgs[x] = 'S'
-# groupings
-for x in ['\'\'', '(', ')', ',', ':', '``'] :
-    reduced_tgs[x] = 'G'
-# end-of-sentence symbols
-reduced_tgs['.'] = 'E'
-reduced_tgs['-NONE-'] = '-NONE-'
-
-reduced_tags = ['N', 'V', 'AJ', 'AV', 'I', 'S', 'G', 'E']
-"""
 
 #Singular Nouns
 for x in ['NN', 'NNP']: reduced_tgs[x] = 'NS'
@@ -139,18 +111,7 @@ for line in raw_lines:
 print "line_structures:" + str(line_structures[:10]) + '\n'
 print "Number of line_structures:" + str(len(line_structures))
 
-
-'''
-for pos in words_in_pos :
-    print str(len(words_in_pos[pos])) + ": " +  pos
-    print words_in_pos[pos]
-
-    print
-    print
-'''
-
-
- 
+#Function to return a random word from a pos based on weighted probability 
 def get_word_for_pos(pos, hist):
     word_probs = {}
     sumProbs = 0.0
@@ -168,5 +129,24 @@ def get_word_for_pos(pos, hist):
             return word
         
     #if we do not return anything we should throw an exception
-        
+    
+struct = line_structures[(random.random() * len(line_structures))]
+line_to_build = ['']
+print "Length of line_to_build:" + str(len(line_to_build))
+for pos in struct:
+    get_word_for_pos(words_in_pos[pos], line_to_build, langmod)
+
+
+
+'''
+for pos in words_in_pos :
+    print str(len(words_in_pos[pos])) + ": " +  pos
+    print words_in_pos[pos]
+
+    print
+    print
+'''
+
+
+
 #print nltk_text
