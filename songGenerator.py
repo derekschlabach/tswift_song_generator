@@ -2,6 +2,7 @@
 import nltk
 from nltk.corpus import PlaintextCorpusReader
 from custom.langmod import *
+from custom.functions import *
 
 import re
 import random
@@ -11,6 +12,7 @@ raw_lines = filter(None, [ re.sub(r'\([^)]*\)|^[a-z\'0-9]', '', line).strip().lo
 raw_words = re.findall(r'[a-z\'0-9]+', ' '.join(raw_lines))
 vocab = set(raw_words)
 
+#in custom.langmod
 lm_data = LanguageModelData(raw_words)
 langmod = TrigramLanguageModel(lm_data)
 

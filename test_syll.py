@@ -1,4 +1,4 @@
-@author Derek Schlabach
+#author Derek Schlabach
 from custom.functions import *
 
 while True :
