@@ -68,6 +68,7 @@ for line in raw_lines:
     tagged_line = nltk.pos_tag(nltk.Text(line.split(' ')))
     for (word, tag) in tagged_line:
         #print word, tag
+        #swap these with the reduced tagset here and only keep those structures
         currentStruct.append(tag)
     #print currentStruct
     if line_structures is None or currentStruct not in line_structures:
