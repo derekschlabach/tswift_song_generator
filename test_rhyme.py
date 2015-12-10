@@ -3,7 +3,7 @@ from custom.functions import *
 import nltk 
 
 while True :
-    vars = raw_input("Enter the target word followed by candidates ").split(' ')
+    vars = raw_input("Enter the target word and level(int) followed by candidates ").split(' ')
     #print "Inputs:" + str(vars) +"\n"
     target = vars[0]
     level = int(vars[1])
