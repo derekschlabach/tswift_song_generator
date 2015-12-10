@@ -8,7 +8,9 @@ import re
 import random
 
 file_name = "corpus/tswift-full.txt"
+
 raw_lines = filter(None, [ re.sub(r'\([^)]*\)|^[a-z\'0-9]', '', line).strip().lower() for line in open(file_name).readlines()])
+
 raw_words = re.findall(r'[a-z\'0-9]+', ' '.join(raw_lines))
 vocab = set(raw_words)
 
@@ -50,19 +52,21 @@ reduced_tags = ['N', 'V', 'AJ', 'AV', 'I', 'S', 'G', 'E']
 #make map of pos to sets of words of that pos from nltk's tags
 words_in_pos = {}
 all_tagged_vocab = nltk.pos_tag(nltk.Text(vocab))
-all_tagged_vocab = [ (word, penntb_to_reduced[tag]) for (word, tag) in all_tagged_vocab ]
+#all_tagged_vocab = [ (word, penntb_to_reduced[tag]) for (word, tag) in all_tagged_vocab ]
 for (word, tag) in all_tagged_vocab :
     if tag in words_in_pos :
         words_in_pos[tag].append(word)
     else :
         words_in_pos[tag] = [word]
 
+'''
 for pos in words_in_pos :
-    print pos
+    print str(len(words_in_pos[pos])) + ": " +  pos
     print words_in_pos[pos]
 
     print
     print
+'''
 
 
  
