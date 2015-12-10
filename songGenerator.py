@@ -19,40 +19,101 @@ lm_data = LanguageModelData(raw_words)
 langmod = TrigramLanguageModel(lm_data)
 
 #Taken from Proj 4
-penntb_to_reduced = {}
+reduced_tgs = {}
+"""
 # noun-like
 for x in ['NN', 'NNS', 'NNP', 'NNPS', 'PRP', 'EX', 'WP'] :
-    penntb_to_reduced[x] = 'N'
+    reduced_tgs[x] = 'N'
 # verb-like
 for x in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ', 'MD', 'TO'] :
-    penntb_to_reduced[x] = 'V'
+    reduced_tgs[x] = 'V'
 # adjective-like
 for x in ['POS', 'PRP$', 'WP$', 'JJ', 'JJR', 'JJS', 'DT', 'CD', 'PDT', 'WDT', 'LS']:
-    penntb_to_reduced[x] = 'AJ'
+    reduced_tgs[x] = 'AJ'
 # adverb-like
 for x in ['RB', 'RBR', 'RBS', 'WRB', 'RP', 'IN', 'CC']:
-    penntb_to_reduced[x] = 'AV'
+    reduced_tgs[x] = 'AV'
 # interjections
 for x in ['FW', 'UH'] :
-    penntb_to_reduced[x] = 'I'
+    reduced_tgs[x] = 'I'
 # symbols
 for x in ['SYM', '$', '#'] :
-    penntb_to_reduced[x] = 'S'
+    reduced_tgs[x] = 'S'
 # groupings
 for x in ['\'\'', '(', ')', ',', ':', '``'] :
-    penntb_to_reduced[x] = 'G'
+    reduced_tgs[x] = 'G'
 # end-of-sentence symbols
-penntb_to_reduced['.'] = 'E'
-penntb_to_reduced['-NONE-'] = '-NONE-'
+reduced_tgs['.'] = 'E'
+reduced_tgs['-NONE-'] = '-NONE-'
 
 reduced_tags = ['N', 'V', 'AJ', 'AV', 'I', 'S', 'G', 'E']
+"""
+
+#Singular Nouns
+for x in ['NN', 'NNP']: reduced_tgs[x] = 'NS'
+
+#Plural Nouns
+for x in ['NNS', 'NNPS']: reduced_tgs[x] = 'NP'
+    
+#There
+reduced_tgs['EX'] = 'EX'
+
+#Personal Pronouns
+reduced_tgs['PRP'] = 'PRP'
+
+#Wh-Pronouns
+reduced_tgs['WP'] = 'WP'
+
+#Verbs should stay the same to preserve tense and tone
+reduced_tgs['VB']  = 'VB'
+reduced_tgs['VBD'] = 'VBD'
+reduced_tgs['VBG'] = 'VBG'
+reduced_tgs['VBN'] = 'VBN'
+reduced_tgs['VBP'] = 'VBP'
+reduced_tgs['VBZ'] = 'VBZ'
+reduced_tgs['MD']  = 'MD'
+reduced_tgs['TO']  = 'TO'
+
+#Possesive Pronoun
+reduced_tgs['PRP$']  = 'PRP$'
+
+#Determiner
+reduced_tgs['DT'] = 'DT'
+
+#Cardinal Numbers
+reduced_tgs['CD'] = 'CD'
+
+#Which
+reduced_tgs['WDT'] = 'WDT'
+
+#Adjective-Like
+for x in ['JJ', 'JJR', 'JJS']: reduced_tgs[x] = 'AJ'
+
+#Wh-adverbs
+reduced_tgs['WRB'] = 'WRB'
+
+#Prepositions
+for x in ['RP', 'IN']: reduced_tgs[x] = 'IN'
+
+#Coordinating Conjunctions
+reduced_tgs['CC'] = 'CC'
+
+#Adverb-Like
+for x in ['RB', 'RBR', 'RBS']: reduced_tgs[x] = 'AV'
+
+# end-of-sentence symbols
+reduced_tgs['-NONE-'] = '-NONE-'
+
+print len(set(reduced_tgs.values()))
+
+#reduced_tags = ['N', 'V', 'AJ', 'AV', 'I', 'S', 'G', 'E']
 
 
 #use nltk tags not reduced
 #make map of pos to sets of words of that pos from nltk's tags
 words_in_pos = {}
 all_tagged_vocab = nltk.pos_tag(nltk.Text(vocab))
-#all_tagged_vocab = [ (word, penntb_to_reduced[tag]) for (word, tag) in all_tagged_vocab ]
+#all_tagged_vocab = [ (word, reduced_tgs[tag]) for (word, tag) in all_tagged_vocab ]
 for (word, tag) in all_tagged_vocab :
     if tag in words_in_pos :
         words_in_pos[tag].append(word)
@@ -69,7 +130,7 @@ for line in raw_lines:
     for (word, tag) in tagged_line:
         #print word, tag
         #swap these with the reduced tagset here and only keep those structures
-        currentStruct.append(tag)
+        currentStruct.append(reduced_tgs[tag])
     #print currentStruct
     if line_structures is None or currentStruct not in line_structures:
         line_structures.append(currentStruct)
