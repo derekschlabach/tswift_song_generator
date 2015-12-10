@@ -12,6 +12,7 @@ def rhyme(inp, candidates, level):
         rhymes += [word for word, pron in entries if word in candidates and pron[-level:] == syllable[-level:]]
     return set(rhymes)
 
+#Function taken from 'http://eayd.in/?p=232'
 def syllables(word) :
  
     word = word.lower()
