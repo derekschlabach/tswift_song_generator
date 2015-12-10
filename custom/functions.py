@@ -140,3 +140,44 @@ def syllables(word) :
     # calculate the output
     return numVowels - disc + syls
 
+reduced_tgs = {}
+#Singular Nouns
+for x in ['NN', 'NNP']: reduced_tgs[x] = 'NS'
+#Plural Nouns
+for x in ['NNS', 'NNPS']: reduced_tgs[x] = 'NP'
+reduced_tgs['EX'] = 'EX'
+#Personal Pronouns
+reduced_tgs['PRP'] = 'PRP'
+#Wh-Pronouns
+reduced_tgs['WP'] = 'WP'
+#Verbs should stay the same to preserve tense and tone
+reduced_tgs['VB']  = 'VB'
+reduced_tgs['VBD'] = 'VBD'
+reduced_tgs['VBG'] = 'VBG'
+reduced_tgs['VBN'] = 'VBN'
+reduced_tgs['VBP'] = 'VBP'
+reduced_tgs['VBZ'] = 'VBZ'
+reduced_tgs['MD']  = 'MD'
+reduced_tgs['TO']  = 'TO'
+#Possesive Pronoun
+reduced_tgs['PRP$']  = 'PRP$'
+#Determiner
+reduced_tgs['DT'] = 'DT'
+#Cardinal Numbers
+for x in ['CD', 'LS']: reduced_tgs[x] = 'CD'
+#Which
+reduced_tgs['WDT'] = 'WDT'
+#Adjective-Like
+for x in ['JJ', 'JJR', 'JJS']: reduced_tgs[x] = 'AJ'
+#Wh-adverbs
+reduced_tgs['WRB'] = 'WRB'
+#Prepositions
+for x in ['RP', 'IN']: reduced_tgs[x] = 'IN'
+#Coordinating Conjunctions
+reduced_tgs['CC'] = 'CC'
+#Adverb-Like
+for x in ['RB', 'RBR', 'RBS']: reduced_tgs[x] = 'AV'
+# end-of-sentence symbols
+reduced_tgs['-NONE-'] = '-NONE-'
+reduced_tgs['PDT'] = 'PDT'
+reduced_tagset = ['NS', 'NP', 'EX', 'PRP', 'WP', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ', 'MD', 'TO', 'PRP$', 'DT', 'CD', 'WDT', 'AJ', 'WRB', 'IN', 'CC', 'AV', '-NONE-', 'PDT']
