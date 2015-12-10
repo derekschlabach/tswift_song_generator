@@ -59,6 +59,25 @@ for (word, tag) in all_tagged_vocab :
     else :
         words_in_pos[tag] = [word]
 
+line_structures = []   
+counter = 0 
+for line in raw_lines:
+    #if counter is 10:
+     #   break
+    currentStruct = []
+    tagged_line = nltk.pos_tag(nltk.Text(line.split(' ')))
+    for (word, tag) in tagged_line:
+        #print word, tag
+        currentStruct.append(tag)
+    #print currentStruct
+    if line_structures is None or currentStruct not in line_structures:
+        line_structures.append(currentStruct)
+        
+    counter += 1
+print "line_structures:" + str(line_structures[:10]) + '\n'
+print "Number of line_structures:" + str(len(line_structures))
+
+
 '''
 for pos in words_in_pos :
     print str(len(words_in_pos[pos])) + ": " +  pos
