@@ -47,12 +47,28 @@ for line in raw_lines:
 def get_word_for_pos(pos, hist):
     word_probs = {}
     sumProbs = 0.0
+    
+    #print words_in_pos[pos]
     for word in words_in_pos[pos]:
-        word_probs[word] = langmod.p(word, hist)
+        prob = langmod.p(word, hist)
+        word_probs[word] = prob
         sumProbs += word_probs[word]
+    
+    if sumProbs == 0.0:
+        for word in words_in_pos[pos]:
+            prob = langmod.p(word, hist[-1])
+            word_probs[word] = prob
+            sumProbs += word_probs[word]
+    
+    if sumProbs == 0.0:
+        for word in words_in_pos[pos]:
+            prob = langmod.p(word, [''])
+            word_probs[word] = prob
+            sumProbs += word_probs[word]
     
     #choose random number from 0.00000001 to sumProbs (inclusive)
     rand = random.random() * sumProbs
+    print str(sumProbs) + ": " + str(rand)
     counter = 0.0
     for word in word_probs:
         counter += word_probs[word]
@@ -62,11 +78,17 @@ def get_word_for_pos(pos, hist):
         
     #if we do not return anything we should throw an exception
     
-struct = line_structures[(random.random() * len(line_structures))]
-line_to_build = ['']
-print "Length of line_to_build:" + str(len(line_to_build))
+struct = line_structures[int(random.random() * len(line_structures))]
+line_to_build = []
+
 for pos in struct:
-    get_word_for_pos(words_in_pos[pos], line_to_build, langmod)
+    line_to_build.append(get_word_for_pos(pos, line_to_build))
+for i in range(10) :
+    print get_word_for_pos('NS', [])
+
+print "Length of line_to_build:" + str(len(line_to_build))
+print struct
+print line_to_build
 
 
 
