@@ -5,10 +5,7 @@ def rhyme(inp, candidates, level):
     entries = nltk.corpus.cmudict.entries()
     syllables = [(word, syl) for word, syl in entries if word == inp]
     rhymes = []
-    print candidates
     for (word, syllable) in syllables:
-        #print word
-        #print word in candidates
         rhymes += [word for word, pron in entries if word in candidates and pron[-level:] == syllable[-level:]]
     return set(rhymes)
 
