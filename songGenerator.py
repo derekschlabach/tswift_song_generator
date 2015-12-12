@@ -26,10 +26,13 @@ for tag in reduced_tagset :
 lineCount = 4
 syllX = 12
 syllY = 16
-rhymeScheme = 0101
+rhymeScheme = [0,1,0,1]
 #rhyme scheme and line count need to match up
-song_structure = {'Verse':[lineCount, syllX, syllY, rhymeScheme], 
-                  'Chorus':[6, 12, 16, 100110]}
+#song_structure = {'Verse':[lineCount, syllX, syllY, rhymeScheme], 
+#                  'Chorus':[6, 12, 16, [1,0,0,1,1,0]]}
+
+song_structure = [[lineCount, syllX, syllY, rhymeScheme], 
+                  [6, 12, 16, [1,0,0,1,1,0]]]
 
 line_structures = []
 #this should be a map of every possible line ending to every possible line beginning that can follow
@@ -100,15 +103,17 @@ def get_word_for_pos(pos, hist):
     #if we do not return anything we should throw an exception
     
     
+rhymeLevel = 1
 for part in song_structure:
+    print "----- PART STARTING -----"
     currLineCount = part[0]
     currSyllX = part[1]
     currSyllY = part[2]
     #1s and 0s need to rhyme with each other
     currRhymeScheme = part[3] #0101
     rhymeSchemeIndex = 0
-    #first is the 0 rhyming word, second is the 0 rhyme, third is last part of speech 
-    previous = ('0', '1', '0')
+    #first is the 0 rhyming word, second is the 1 rhyme, third is last part of speech line ending
+    previous = ['0', '1', '0']
     #for however many lines this part of the song should be
     for line in range(currLineCount):
         #if this isn't the first line
@@ -122,7 +127,9 @@ for part in song_structure:
         #if this is the first, then save the last part of speech to check against next iteration
         else:
             struct = line_structures[int(random.random() * len(line_structures))]
+            print struct[-1]
             previous[2] = struct[-1]
+            print previous[2]
 
                 
         line_to_build = []
@@ -131,22 +138,30 @@ for part in song_structure:
             #if we are at the last pos in the struct 
             if struct.index(pos) == len(struct)-1:
                 #if previous at the current rhyme scheme's value is not initialized
-                if previous[currRhymeScheme[rhymeSchemeIndex]] == '0' or '1':
+                currPrevious = previous[currRhymeScheme[rhymeSchemeIndex]]
+                if currPrevious == '0' or currPrevious == '1':
+                    print 'here 1'
                     line_to_build.append(get_word_for_pos(pos, line_to_build))
                     #record the last word so we can rhyme with it
                     previous[currRhymeScheme[rhymeSchemeIndex]] = line_to_build[-1]
                     rhymeSchemeIndex += 1
                 #if the value for the one we are on has been initialized 
                 else:
-                    word_to_rhyme = previous[currRhymeScheme[rhymeSchemeIndex]]
+                    print 'here 2'
+                    word_to_rhyme = currPrevious
                     #pass this set to get_word_for_pos maybe but for now just iterate until good
-                    rhyming_words = rhyme(word_to_rhyme, words_in_pos[pos])
+                    rhyming_words = rhyme(word_to_rhyme, words_in_pos[pos], rhymeLevel)
+                    #print word_to_rhyme, rhyming_words
                     candidate_word = ''
                     while True:
                         candidate_word = get_word_for_pos(pos, line_to_build)
+                        print candidate_word
                         if candidate_word in rhyming_words:
                             line_to_build.append(candidate_word)
                             break
+                        
+            else:
+                line_to_build.append(get_word_for_pos(pos, line_to_build))
                     
                     
             
@@ -156,8 +171,9 @@ for part in song_structure:
     
         print "Length of line_to_build:" + str(len(line_to_build))
         print struct
-        print line_to_build
+        print str(line_to_build) + '\n'
     
+"""
 prev_ending = '0'
 for x in range(0, 10):
     #if this isn't the first line
@@ -185,7 +201,7 @@ for x in range(0, 10):
     print "Length of line_to_build:" + str(len(line_to_build))
     print struct
     print line_to_build
-
+"""
 
 
 '''
