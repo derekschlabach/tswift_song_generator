@@ -23,16 +23,17 @@ words_in_pos = {}
 for tag in reduced_tagset :
    words_in_pos[tag] = []
 
-lineCount = 4
-syllX = 12
-syllY = 16
-rhymeScheme = [0,1,0,1]
 #rhyme scheme and line count need to match up
-#song_structure = {'Verse':[lineCount, syllX, syllY, rhymeScheme], 
-#                  'Chorus':[6, 12, 16, [1,0,0,1,1,0]]}
+#song_structure = [lineCount, syllX, syllY, rhymeScheme, unique] 
+part_structure = {}
+part_structure['v'] = [4, 12, 16, [0,1,0,1], 1]
+part_structure['c'] = [6, 12, 16, [1,0,0,1,1,0], 0]
+part_structure['pc'] = [2, 8, 12, [0,1], 0]
+part_structure['b'] = [3, 16, 20, [1,0,1], 0]
 
-song_structure = [[lineCount, syllX, syllY, rhymeScheme], 
-                  [6, 12, 16, [1,0,0,1,1,0]]]
+song_structure = ['v', 'v', 'pc', 'c', 'v', 'c', 'b', 'c']
+
+stored_part = {}
 
 line_structures = []
 #this should be a map of every possible line ending to every possible line beginning that can follow
@@ -60,32 +61,26 @@ for line in raw_lines:
     if line_structures is None or currentStruct not in line_structures:
         line_structures.append(currentStruct)
         
-#print "valid transitions:" + str(valid_line_transitions) + '\n'
-        
-#print "line_structures:" + str(line_structures[:10]) + '\n'
-#print "Number of line_structures:" + str(len(line_structures))
 
 
-#print words_in_pos
  
-def get_word_for_pos(pos, hist):
+def get_word_for_pos(select_vocab, hist):
     word_probs = {}
     sumProbs = 0.0
     
-    #print words_in_pos[pos]
-    for word in words_in_pos[pos]:
+    for word in select_vocab :
         prob = langmod.p(word, hist)
         word_probs[word] = prob
         sumProbs += word_probs[word]
     
     if sumProbs == 0.0:
-        for word in words_in_pos[pos]:
+        for word in select_vocab :
             prob = langmod.p(word, hist[-1])
             word_probs[word] = prob
             sumProbs += word_probs[word]
     
     if sumProbs == 0.0:
-        for word in words_in_pos[pos]:
+        for word in select_vocab:
             prob = langmod.p(word, [])
             word_probs[word] = prob
             sumProbs += word_probs[word]
@@ -102,117 +97,87 @@ def get_word_for_pos(pos, hist):
         
     #if we do not return anything we should throw an exception
     
+song = ""
     
-rhymeLevel = 1
-for part in song_structure:
-    print "----- PART STARTING -----"
+rhymeLevel = 2
+for ind in song_structure:
+    part = part_structure[ind]
     currLineCount = part[0]
     currSyllX = part[1]
     currSyllY = part[2]
-    #1s and 0s need to rhyme with each other
-    currRhymeScheme = part[3] #0101
+    currRhymeScheme = part[3] 
+    currUnique = part[4]
+
+    part_to_build = ""
+
+    if not currUnique and ind in stored_part :
+        print stored_part[ind]
+        continue
+        
     rhymeSchemeIndex = 0
     #first is the 0 rhyming word, second is the 1 rhyme, third is last part of speech line ending
     previous = ['0', '1', '0']
     #for however many lines this part of the song should be
-    for line in range(currLineCount):
+    line = 0
+    while line < currLineCount :
         #if this isn't the first line
+        line_passes = True
         if previous[2] != '0':
             #loop until we find a valid sentence ending that also rhymes
             while True:
                 struct = line_structures[int(random.random() * len(line_structures))]
-                #print struct[-1]
                 if struct[-1] in valid_line_transitions[previous[2]]:
                     break
         #if this is the first, then save the last part of speech to check against next iteration
         else:
             struct = line_structures[int(random.random() * len(line_structures))]
-            print struct[-1]
             previous[2] = struct[-1]
-            print previous[2]
 
                 
         line_to_build = []
             
-        for pos in struct:
+        for i in xrange(len(struct)) :
+            pos = struct[i]
+
             #if we are at the last pos in the struct 
-            if struct.index(pos) == len(struct)-1:
+            if i == len(struct)-1:
                 #if previous at the current rhyme scheme's value is not initialized
-                currPrevious = previous[currRhymeScheme[rhymeSchemeIndex]]
+                currPrevious = previous[currRhymeScheme[line]]
                 if currPrevious == '0' or currPrevious == '1':
-                    print 'here 1'
-                    line_to_build.append(get_word_for_pos(pos, line_to_build))
+
+                    line_to_build.append(get_word_for_pos(words_in_pos[pos], line_to_build))
                     #record the last word so we can rhyme with it
-                    previous[currRhymeScheme[rhymeSchemeIndex]] = line_to_build[-1]
+                    previous[currRhymeScheme[line]] = line_to_build[-1]
                     rhymeSchemeIndex += 1
                 #if the value for the one we are on has been initialized 
                 else:
-                    print 'here 2'
+
                     word_to_rhyme = currPrevious
                     #pass this set to get_word_for_pos maybe but for now just iterate until good
                     rhyming_words = rhyme(word_to_rhyme, words_in_pos[pos], rhymeLevel)
-                    #print word_to_rhyme, rhyming_words
-                    candidate_word = ''
-                    while True:
-                        candidate_word = get_word_for_pos(pos, line_to_build)
-                        print candidate_word
-                        if candidate_word in rhyming_words:
-                            line_to_build.append(candidate_word)
-                            break
-                        
+                    #print rhyming_words
+
+                    if len(rhyming_words) > 0 :
+                        line_to_build.append(get_word_for_pos(rhyming_words, line_to_build))
+                        #rhymeSchemeIndex += 1
+                    else :
+                        line_passes = False
             else:
-                line_to_build.append(get_word_for_pos(pos, line_to_build))
-                    
-                    
+                line_to_build.append(get_word_for_pos(words_in_pos[pos], line_to_build))
+
+
+        num_syll = syllables(" ".join(line_to_build))
+        if num_syll < currSyllX or num_syll > currSyllY  :
+            line_passes = False
+    
             
+                    
+        if line_passes :
+            line += 1 
+            line_str = re.sub(r' i\b', ' I', " ".join(line_to_build).capitalize())
+            part_to_build += line_str + '\n'
 
-        
-        
-    
-        print "Length of line_to_build:" + str(len(line_to_build))
-        print struct
-        print str(line_to_build) + '\n'
-    
-"""
-prev_ending = '0'
-for x in range(0, 10):
-    #if this isn't the first line
-    if prev_ending != '0':
-        
-        while True:
-            struct = line_structures[int(random.random() * len(line_structures))]
-            #print struct[-1]
-            if struct[-1] in valid_line_transitions[prev_ending]:
-                break
-    
-    else:
-        struct = line_structures[int(random.random() * len(line_structures))]
-        prev_ending = struct[-1]
-        
-    line_to_build = []
-    
-    for pos in struct:
-        line_to_build.append(get_word_for_pos(pos, line_to_build))
-    
+    if not currUnique :
+        stored_part[ind] = part_to_build 
 
-    #for i in range(10) :
-    #   print get_word_for_pos('NS', [])
-    
-    print "Length of line_to_build:" + str(len(line_to_build))
-    print struct
-    print line_to_build
-"""
-
-
-'''
-for pos in words_in_pos :
-    print str(len(words_in_pos[pos])) + ": " +  pos
-    print words_in_pos[pos]
-
-    print
-    print
-'''
-
-
-
-#print nltk_text
+    print part_to_build + "\n"
